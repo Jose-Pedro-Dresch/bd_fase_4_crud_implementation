@@ -1,5 +1,9 @@
+/* ====================================================================
+Aproveitando os dados gerados na fase 3
+==================================================================== 
+*/
+
 \encoding UTF8
--- To avoid getting duplicated data; and restart ID counter
 TRUNCATE TABLE IDIOMA, COMPETENCIA, CONTA, CIDADE, ESTADO, PAIS RESTART IDENTITY CASCADE;
 
 INSERT INTO PAIS (NomPais)
@@ -743,15 +747,6 @@ VALUES
 (1, 19),
 (4, 20);
 
-
-
-
-
-
-
-
-
-
 /* ====================================================================
 Geração de registros aleatórios 
 ==================================================================== 
@@ -761,7 +756,6 @@ Geração de registros aleatórios
 INSERT INTO CONTA (EmailConta, SenhaConta, DtCrcaoConta, IDCidade)
 SELECT 
     (ARRAY[
-        -- 100 nomes
         'Bruno', 'Ana', 'João', 'Maria', 'Lucas', 'Mariana', 'Carlos', 'Julia', 'Phelipe', 'Fernanda', 
         'Diego', 'Carla', 'Jose', 'Julio', 'Luis', 'Murilo', 'Pedro', 'Rafael', 'Gabriela', 'Beatriz', 
         'Thiago', 'Leticia',

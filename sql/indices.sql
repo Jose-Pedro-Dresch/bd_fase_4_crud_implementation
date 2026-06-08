@@ -10,9 +10,6 @@ SELECT NomPsso
 FROM PESSOAL 
 WHERE NomPsso = 'Julio';
 
-
-
-
 -- 2. Análise de desempenho APÓS criar o índice
 \echo
 \echo '================================================================================================================================='
