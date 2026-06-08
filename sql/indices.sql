@@ -1,1 +1,28 @@
-CREATE INDEX idx_conta ON pessoal(nompsso);
+-- 1. Análise de desempenho ANTES de criar o índice
+\echo
+\echo '=============================================================================================================='
+\echo '============================================= EXECUTANDO SEM INDICE =========================================='
+\echo '=============================================================================================================='
+\echo
+
+EXPLAIN ANALYZE 
+SELECT NomPsso 
+FROM PESSOAL 
+WHERE NomPsso = 'Phelipe';
+
+
+
+
+-- 2. Análise de desempenho APÓS criar o índice
+\echo
+\echo '================================================================================================================================='
+\echo '======================================================== EXECUTANDO COM INDICE =================================================='
+\echo '================================================================================================================================='
+\echo
+
+CREATE INDEX idx_conta ON PESSOAL(NomPsso);
+
+EXPLAIN ANALYZE 
+SELECT NomPsso 
+FROM PESSOAL 
+WHERE NomPsso = 'Phelipe';

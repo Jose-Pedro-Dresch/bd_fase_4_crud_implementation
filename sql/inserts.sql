@@ -761,7 +761,20 @@ Geração de 1 milhão de registros com relacionamentos automatizados
 -- 1. Inserir 1.000.000 Contas vinculadas a PESSOAL usando arrays de nomes reais
 INSERT INTO CONTA (EmailConta, SenhaConta, DtCrcaoConta, IDCidade)
 SELECT 
-    (ARRAY['Bruno', 'Ana', 'João', 'Maria', 'Lucas', 'Mariana', 'Carlos', 'Julia', 'Phelipe', 'Fernanda', 'Diego', 'Carla', 'Jose', 'Julio', 'Luis', 'Murilo', 'Pedro', 'Rafael', 'Gabriela', 'Beatriz', 'Thiago', 'Leticia'])[floor(random() * 22 + 1)] || '.' ||
+    (ARRAY[
+        -- 100 nomes
+        'Bruno', 'Ana', 'João', 'Maria', 'Lucas', 'Mariana', 'Carlos', 'Julia', 'Phelipe', 'Fernanda', 
+        'Diego', 'Carla', 'Jose', 'Julio', 'Luis', 'Murilo', 'Pedro', 'Rafael', 'Gabriela', 'Beatriz', 
+        'Thiago', 'Leticia',
+        'Arthur', 'Davi', 'Gabriel', 'Bernardo', 'Heitor', 'Miguel', 'Matheus', 'Guilherme', 'Enzo', 'Felipe',
+        'Nicolas', 'Samuel', 'Gustavo', 'Henrique', 'Eduardo', 'Victor', 'Leonardo', 'Daniel', 'Igor', 'Breno',
+        'Caio', 'Rodrigo', 'Marcelo', 'Marcos', 'Fernando', 'Renato', 'Andre', 'Ricardo', 'Roberto', 'Alexandre',
+        'Sergio', 'Tiago', 'Vinicius', 'Yuri', 'Caua', 'Theo', 'Joaquim', 'Otavio', 'Ian', 'Alice',
+        'Sophia', 'Laura', 'Valentina', 'Helena', 'Isabella', 'Manuela', 'Luiza', 'Giovanna', 'Isadora', 'Carolina',
+        'Amanda', 'Camila', 'Bruna', 'Jessica', 'Vitoria', 'Larissa', 'Nathalia', 'Bianca', 'Lorena', 'Melissa',
+        'Emanuelly', 'Nicole', 'Eduarda', 'Isabel', 'Clara', 'Marina', 'Aline', 'Patricia', 'Juliana', 'Vanessa',
+        'Tatiana', 'Renata', 'Simone', 'Luciana', 'Mirella', 'Olivia', 'Cecilia', 'Livia'
+    ])[floor(random() * 100 + 1)] || '.' ||
     (ARRAY['Silva', 'Santos', 'Oliveira', 'Souza', 'Rodrigues', 'Ferreira', 'Alves', 'Lima', 'Gomes', 'Costa'])[floor(random() * 10 + 1)] || '.' ||
     i || '@testemassivo.com',
     'senha123',
