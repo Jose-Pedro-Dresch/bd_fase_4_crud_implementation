@@ -754,11 +754,11 @@ VALUES
 
 /* ====================================================================
 INÍCIO DA CARGA MASSIVA (FASE 4)
-Geração de 100 mil registros com relacionamentos automatizados
+Geração de 1 milhão de registros com relacionamentos automatizados
 ==================================================================== 
 */
 
--- 1. Inserir 100.000 Contas vinculadas a PESSOAL usando arrays de nomes reais
+-- 1. Inserir 1.000.000 Contas vinculadas a PESSOAL usando arrays de nomes reais
 INSERT INTO CONTA (EmailConta, SenhaConta, DtCrcaoConta, IDCidade)
 SELECT 
     (ARRAY['Bruno', 'Ana', 'João', 'Maria', 'Lucas', 'Mariana', 'Carlos', 'Julia', 'Phelipe', 'Fernanda', 'Diego', 'Carla', 'Jose', 'Julio', 'Luis', 'Murilo', 'Pedro', 'Rafael', 'Gabriela', 'Beatriz', 'Thiago', 'Leticia'])[floor(random() * 22 + 1)] || '.' ||
@@ -767,7 +767,7 @@ SELECT
     'senha123',
     CURRENT_DATE - floor(random() * 1000)::int,
     floor(random() * 52 + 1)::int
-FROM generate_series(1, 900000) AS s(i);
+FROM generate_series(1, 90000) AS s(i);
 
 -- 2. Mapeamento estrito 1:1 para PESSOAL
 INSERT INTO PESSOAL (IDConta, NomPsso, SobnomPsso, TtloProfPsso)
@@ -779,7 +779,7 @@ SELECT
 FROM CONTA
 WHERE EmailConta LIKE '%@testemassivo.com';
 
--- 3. Inserir 1.000 Contas vinculadas a CORPORATIVA
+-- 3. Inserir 100.000 Contas vinculadas a CORPORATIVA
 INSERT INTO CONTA (EmailConta, SenhaConta, DtCrcaoConta, IDCidade)
 SELECT 
     'empresa.' || (ARRAY['Tech', 'Data', 'Cloud', 'Smart', 'Global', 'Inova', 'Cyber', 'Next'])[floor(random() * 8 + 1)] || '.' ||

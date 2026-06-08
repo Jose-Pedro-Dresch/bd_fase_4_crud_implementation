@@ -1,0 +1,1 @@
+CREATE INDEX idx_conta ON pessoal(nompsso);
