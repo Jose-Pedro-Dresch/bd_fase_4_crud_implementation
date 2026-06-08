@@ -8,7 +8,7 @@
 EXPLAIN ANALYZE 
 SELECT NomPsso 
 FROM PESSOAL 
-WHERE NomPsso = 'Phelipe';
+WHERE NomPsso = 'Julio';
 
 
 
@@ -25,4 +25,4 @@ CREATE INDEX idx_conta ON PESSOAL(NomPsso);
 EXPLAIN ANALYZE 
 SELECT NomPsso 
 FROM PESSOAL 
-WHERE NomPsso = 'Phelipe';
+WHERE NomPsso = 'Julio';

@@ -753,12 +753,11 @@ VALUES
 
 
 /* ====================================================================
-INÍCIO DA CARGA MASSIVA (FASE 4)
-Geração de 1 milhão de registros com relacionamentos automatizados
+Geração de registros aleatórios 
 ==================================================================== 
 */
 
--- 1. Inserir 1.000.000 Contas vinculadas a PESSOAL usando arrays de nomes reais
+-- 1. Inserção de 90.000 Contas vinculadas a PESSOAL usando arrays de nomes reais
 INSERT INTO CONTA (EmailConta, SenhaConta, DtCrcaoConta, IDCidade)
 SELECT 
     (ARRAY[
@@ -792,7 +791,7 @@ SELECT
 FROM CONTA
 WHERE EmailConta LIKE '%@testemassivo.com';
 
--- 3. Inserir 100.000 Contas vinculadas a CORPORATIVA
+-- 3. Inserção de 10.000 Contas vinculadas a CORPORATIVA
 INSERT INTO CONTA (EmailConta, SenhaConta, DtCrcaoConta, IDCidade)
 SELECT 
     'empresa.' || (ARRAY['Tech', 'Data', 'Cloud', 'Smart', 'Global', 'Inova', 'Cyber', 'Next'])[floor(random() * 8 + 1)] || '.' ||
@@ -813,7 +812,7 @@ SELECT
 FROM CONTA
 WHERE EmailConta LIKE '%@corp.com';
 
--- 5. Inserir Idiomas aleatórios em novos usuários (ID > 55 por conta do ID sequencial)
+-- 5. Inserção Idiomas aleatórios em novos usuários (ID > 55 por conta do ID sequencial)
 INSERT INTO FALAIDIOM (NvlProfic, IDIdioma, IDConta)
 SELECT 
     (ARRAY['Básico', 'Intermediário', 'Avançado', 'Nativo'])[floor(random() * 4 + 1)],
@@ -822,7 +821,7 @@ SELECT
 FROM PESSOAL
 WHERE IDConta > 55 AND random() < 0.6;
 
--- 6. Inserir Competências aleatórias nos novos usuários
+-- 6. Inserção de Competências aleatórias nos novos usuários
 INSERT INTO POSSCOMP (IDComp, IDConta)
 SELECT 
     floor(random() * 15 + 1)::int,
@@ -830,7 +829,7 @@ SELECT
 FROM PESSOAL
 WHERE IDConta > 55 AND random() < 0.8;
 
--- 7. Criar 5.000 Vagas atreladas às novas empresas (ID > 55)
+-- 7. Criação de Vagas atreladas às novas empresas (ID > 55)
 INSERT INTO VAGAEMPREGO (TtloVaga, DescriVaga, FormatoTrabVaga, DtCrcaoVaga, IDConta)
 SELECT 
     (ARRAY['Especialista em Banco de Dados', 'Cientista de Dados Pleno', 'Engenheiro de Software Senior', 'Especialista em Segurança', 'Analista Financeiro'])[floor(random() * 5 + 1)],
@@ -842,7 +841,7 @@ FROM CORPORATIVA c
 CROSS JOIN generate_series(1, 5)
 WHERE c.IDConta > 55;
 
--- 8. Gerar 20.000 Posts Aleatórios
+-- 8. Geração de 20.000 Posts Aleatórios
 INSERT INTO POST (DtPubliPost, ConteudoPost, NivelVisib, IDConta)
 SELECT 
     CURRENT_TIMESTAMP - (random() * interval '365 days'),
