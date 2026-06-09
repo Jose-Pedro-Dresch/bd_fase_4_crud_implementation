@@ -843,3 +843,66 @@ SELECT
     (ARRAY['PUBLICO', 'PRIVADO'])[floor(random() * 2 + 1)],
     floor(random() * 100000 + 56)::int
 FROM generate_series(1, 20000) AS s(i);
+
+
+-- Dados aleatório de CONEXAO (ACEITA, RECUSADA, PENDENTE)
+
+-- ====================================================================
+-- 1. Inserir ~10.000 conexões ACEITAS
+-- ====================================================================
+INSERT INTO CONEXAO (DtEnvConv, DtAceitConv, StatusConexao, IDConta_1, IDConta_2)
+SELECT 
+    CURRENT_TIMESTAMP - (random() * interval '60 days') AS DtEnvConv,
+    CURRENT_TIMESTAMP - (random() * interval '30 days') AS DtAceitConv,
+    'ACEITA',
+    id1,
+    id2
+FROM (
+    -- Sorteia IDs entre 100 e 80000 para garantir que pegará contas do tipo PESSOAL
+    SELECT 
+        floor(random() * 80000 + 100)::int AS id1,
+        floor(random() * 80000 + 100)::int AS id2
+    FROM generate_series(1, 12000) -- Gera 20% a mais para compensar os descartados por conflito
+) sub
+WHERE id1 <> id2 -- Evita que o usuário se conecte com ele mesmo
+ON CONFLICT DO NOTHING; -- Se a dupla já existir, ignora o erro e continua
+
+
+-- ====================================================================
+-- 2. Inserir ~10.000 conexões PENDENTES
+-- ====================================================================
+INSERT INTO CONEXAO (DtEnvConv, DtAceitConv, StatusConexao, IDConta_1, IDConta_2)
+SELECT 
+    CURRENT_TIMESTAMP - (random() * interval '10 days'),
+    NULL, -- Aqui não há data de aceite
+    'PENDENTE',
+    id1,
+    id2
+FROM (
+    SELECT 
+        floor(random() * 80000 + 100)::int AS id1,
+        floor(random() * 80000 + 100)::int AS id2
+    FROM generate_series(1, 12000)
+) sub
+WHERE id1 <> id2
+ON CONFLICT DO NOTHING;
+
+
+-- ====================================================================
+-- 3. Inserir ~5.000 conexões RECUSADAS
+-- ====================================================================
+INSERT INTO CONEXAO (DtEnvConv, DtAceitConv, StatusConexao, IDConta_1, IDConta_2)
+SELECT 
+    CURRENT_TIMESTAMP - (random() * interval '30 days'),
+    NULL, -- Também não há data de aceite
+    'RECUSADA',
+    id1,
+    id2
+FROM (
+    SELECT 
+        floor(random() * 80000 + 100)::int AS id1,
+        floor(random() * 80000 + 100)::int AS id2
+    FROM generate_series(1, 6000)
+) sub
+WHERE id1 <> id2
+ON CONFLICT DO NOTHING;
