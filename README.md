@@ -45,9 +45,10 @@ O banco de dados cobre entidades como contas pessoais e corporativas, posts, com
 ```
 linkedin-db/
 ├── app.py                 # Aplicação CLI principal
-├── schema.sql             # DDL: criação das tabelas e constraints
-├── inserts.sql            # DML: dados iniciais + carga massiva (100k+ registros)
-├── indices.sql            # Demonstração de análise de índices com EXPLAIN ANALYZE
+├── sql/
+│   ├── schema.sql         # DDL: criação das tabelas e constraints
+│   ├── inserts.sql        # DML: dados iniciais + carga massiva (100k+ registros)
+│   └── indices.sql        # Demonstração de análise de índices com EXPLAIN ANALYZE  
 ├── relational_schema.png  # Diagrama do esquema relacional
 ├── README.md
 └── LICENSE
