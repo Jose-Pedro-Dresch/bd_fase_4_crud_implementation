@@ -122,13 +122,13 @@ psql -U postgres -c "CREATE DATABASE linkedin;"
 Aplique o schema:
 
 ```bash
-psql -U postgres -d linkedin -f schema.sql
+psql -U postgres -d linkedin -f ./sql/schema.sql
 ```
 
 Carregue os dados iniciais e a carga massiva:
 
 ```bash
-psql -U postgres -d linkedin -f inserts.sql
+psql -U postgres -d linkedin -f ./sql/inserts.sql
 ```
 
 > A carga massiva insere **~100.000 contas**, **~10.000 empresas** e dados relacionados. O processo pode levar alguns minutos dependendo do hardware.
@@ -310,7 +310,7 @@ O arquivo `indices.sql` demonstra o ganho de performance ao criar um índice na 
 ### Execute o arquivo:
 
 ```bash
-psql -U postgres -d linkedin -f indices.sql
+psql -U postgres -d linkedin -f ./sql/indices.sql
 ```
 
 ### Resultado esperado
@@ -318,12 +318,11 @@ psql -U postgres -d linkedin -f indices.sql
 **Sem índice** — PostgreSQL realiza um *Sequential Scan* varrendo toda a tabela:
 
 ```
-Seq Scan on pessoal  (cost=0.00..2143.00 rows=4 width=12)
-                     (actual time=0.842..18.543 rows=9 loops=1)
-  Filter: ((nompsso)::text = 'Julio')
-  Rows Removed by Filter: 89991
-Planning Time: 0.102 ms
-Execution Time: 18.601 ms
+Seq Scan on pessoal  (cost=0.00..1845.42 rows=882 width=7) (actual time=0.010..6.498 rows=888 loops=1)
+   Filter: ((nompsso)::text = 'Julio'::text)
+   Rows Removed by Filter: 89146
+Planning Time: 0.318 ms
+Execution Time: 6.556 ms
 ```
 
 **Com índice** — PostgreSQL usa *Index Scan*, buscando diretamente as linhas relevantes:
@@ -333,14 +332,14 @@ CREATE INDEX idx_conta ON PESSOAL(NomPsso);
 ```
 
 ```
-Index Scan using idx_conta on pessoal  (cost=0.29..12.34 rows=4 width=12)
-                                        (actual time=0.045..0.071 rows=9 loops=1)
-  Index Cond: ((nompsso)::text = 'Julio')
-Planning Time: 0.241 ms
-Execution Time: 0.089 ms
+Index Only Scan using idx_conta on pessoal  (cost=0.29..19.73 rows=882 width=7) (actual time=0.043..0.094 rows=888 loops=1)
+   Index Cond: (nompsso = 'Julio'::text)
+   Heap Fetches: 0
+Planning Time: 0.283 ms
+Execution Time: 0.142 ms
 ```
 
-> O tempo de execução cai de **~18ms para ~0.09ms** — uma melhoria de aproximadamente **200×** para buscas por nome exato em tabelas de grande volume.
+> O tempo de execução cai de **~5.56ms para ~0.14ms** — uma melhoria de aproximadamente **40×** para buscas por nome exato em tabelas de grande volume.
 
 ---
 
