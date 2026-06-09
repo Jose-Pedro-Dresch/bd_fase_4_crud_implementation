@@ -107,7 +107,7 @@ def buscar_opcoes_dinamicas(tabela, id_col, expressao_label, clausula_extra=""):
     Se o usuário não digitar nada, traz um Head e Tail (10 asc, 10 desc).
     Se digitar, faz um ILIKE filtrado (limitado a 20).
     """
-    termo = prompt_input(f"🔍 Digite para filtrar {tabela.split()[0]} (ou Enter p/ Head e Tail)", obrigatorio=False)
+    termo = prompt_input(f"Digite para filtrar {tabela.split()[0]} (ou Enter p/ Head e Tail)", obrigatorio=False)
     
     has_where = "WHERE " in clausula_extra.upper()
     where_and = "AND" if has_where else "WHERE"
