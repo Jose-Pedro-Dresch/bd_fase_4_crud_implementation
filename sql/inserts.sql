@@ -848,7 +848,7 @@ FROM generate_series(1, 20000) AS s(i);
 -- Dados aleatório de CONEXAO (ACEITA, RECUSADA, PENDENTE)
 
 -- ====================================================================
--- 1. Inserir ~10.000 conexões ACEITAS
+-- 1. Inserir ~15.000 conexões ACEITAS
 -- ====================================================================
 INSERT INTO CONEXAO (DtEnvConv, DtAceitConv, StatusConexao, IDConta_1, IDConta_2)
 SELECT 
@@ -862,14 +862,14 @@ FROM (
     SELECT 
         floor(random() * 80000 + 100)::int AS id1,
         floor(random() * 80000 + 100)::int AS id2
-    FROM generate_series(1, 12000) -- Gera 20% a mais para compensar os descartados por conflito
+    FROM generate_series(1, 15000) -- Gera 20% a mais para compensar os descartados por conflito
 ) sub
 WHERE id1 <> id2 -- Evita que o usuário se conecte com ele mesmo
 ON CONFLICT DO NOTHING; -- Se a dupla já existir, ignora o erro e continua
 
 
 -- ====================================================================
--- 2. Inserir ~10.000 conexões PENDENTES
+-- 2. Inserir ~15.000 conexões PENDENTES
 -- ====================================================================
 INSERT INTO CONEXAO (DtEnvConv, DtAceitConv, StatusConexao, IDConta_1, IDConta_2)
 SELECT 
@@ -882,14 +882,14 @@ FROM (
     SELECT 
         floor(random() * 80000 + 100)::int AS id1,
         floor(random() * 80000 + 100)::int AS id2
-    FROM generate_series(1, 12000)
+    FROM generate_series(1, 15000)
 ) sub
 WHERE id1 <> id2
 ON CONFLICT DO NOTHING;
 
 
 -- ====================================================================
--- 3. Inserir ~5.000 conexões RECUSADAS
+-- 3. Inserir ~10.000 conexões RECUSADAS
 -- ====================================================================
 INSERT INTO CONEXAO (DtEnvConv, DtAceitConv, StatusConexao, IDConta_1, IDConta_2)
 SELECT 
@@ -902,7 +902,7 @@ FROM (
     SELECT 
         floor(random() * 80000 + 100)::int AS id1,
         floor(random() * 80000 + 100)::int AS id2
-    FROM generate_series(1, 6000)
+    FROM generate_series(1, 10000)
 ) sub
 WHERE id1 <> id2
 ON CONFLICT DO NOTHING;
