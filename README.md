@@ -21,26 +21,26 @@
 
 ---
 
-## 📖 Sobre o Projeto
+## Sobre o Projeto
 
-Este projeto implementa uma **interface de linha de comando (CLI)** completa para gerenciar um banco de dados relacional modelado com base nas entidades do LinkedIn. A aplicação permite realizar operações **CRUD** (Create, Read, Update, Delete) sobre todas as 20 tabelas do schema, com uma interface visual estilizada inspirada no [neofetch](https://github.com/dylanaraps/neofetch).
+Este projeto implementa uma **interface de linha de comando (CLI)** completa para gerenciar um banco de dados relacional modelado com base nas entidades do LinkedIn. A aplicação permite realizar operações **CRUD** (Create, Read, Update, Delete) sobre todas as 20 tabelas do schema.
 
-O banco de dados cobre entidades como contas pessoais e corporativas, posts, comentários, vagas de emprego, competências, formações acadêmicas, experiências profissionais, idiomas e conexões entre usuários — totalizando suporte a **mais de 100.000 registros** na carga massiva de dados.
+O banco de dados cobre entidades como contas pessoais e corporativas, posts, comentários, vagas de emprego, competências, formações acadêmicas, experiências profissionais, idiomas e conexões entre usuários — totalizando suporte a **mais de 100.000 registros**.
 
 ---
 
-## 👥 Autores
+## Autores
 
 | Nome | GitHub |
 |------|--------|
-| José Pedro Dresch | [@josepedrodresch](https://github.com/josepedrodresch) |
-| Phelipe Gabriel Lima da Silva | [@phelipegabriel](https://github.com/phelipegabriel) |
-| Murilo Granemann de Souza | [@murilogranemann](https://github.com/murilogranemann) |
-| Luis Eduardo Weigert Weiss | [@luiseduardo](https://github.com/luiseduardo) |
+| José Pedro Dresch | [@josepedrodresch](https://github.com/Jose-Pedro-Dresch) |
+| Phelipe Gabriel Lima da Silva | [@phelipegabriel](https://github.com/PhelipeGL17) |
+| Murilo Granemann de Souza | [@murilogranemann](https://github.com/Granemann21) |
+| Luis Eduardo Weigert Weiss | [@luiseduardo](https://github.com/LW-Weiss) 
 
 ---
 
-## 🗂️ Estrutura do Repositório
+## Estrutura do Repositório
 
 ```
 linkedin-db/
@@ -55,7 +55,7 @@ linkedin-db/
 
 ---
 
-## 🗄️ Esquema Relacional
+## Esquema Relacional
 
 O banco é composto por **20 tabelas** organizadas em torno da entidade central `CONTA`:
 
@@ -83,24 +83,13 @@ O banco é composto por **20 tabelas** organizadas em torno da entidade central 
 
 ---
 
-## ⚙️ Requisitos
+## Requisitos
 
 ### Sistema Operacional
-- Linux, macOS ou Windows (com suporte a terminal ANSI para cores)
-
-### Python
-- Python **3.8 ou superior**
-
-```bash
-python3 --version
-```
+- Linux, macOS ou Windows
 
 ### PostgreSQL
 - PostgreSQL **13 ou superior** instalado e rodando
-
-```bash
-psql --version
-```
 
 ### Dependências Python
 
@@ -110,11 +99,9 @@ Instale via pip:
 pip install psycopg2-binary
 ```
 
-> **Nota:** `psycopg2-binary` inclui os binários compilados e não exige instalação manual do `libpq-dev`. Em produção, prefira o pacote `psycopg2` com as dependências do sistema instaladas.
-
 ---
 
-## 🚀 Como Rodar
+## Como Rodar
 
 ### 1. Clone o repositório
 
@@ -143,7 +130,7 @@ Carregue os dados iniciais e a carga massiva:
 psql -U postgres -d linkedin -f inserts.sql
 ```
 
-> ⚠️ A carga massiva insere **~100.000 contas**, **~10.000 empresas** e dados relacionados. O processo pode levar alguns minutos dependendo do hardware.
+> A carga massiva insere **~100.000 contas**, **~10.000 empresas** e dados relacionados. O processo pode levar alguns minutos dependendo do hardware.
 
 ### 3. Execute a aplicação
 
@@ -151,7 +138,7 @@ psql -U postgres -d linkedin -f inserts.sql
 python3 app.py
 ```
 
-Ao iniciar, você verá a splash screen estilo neofetch com informações do sistema e da conexão. Se precisar alterar as credenciais do banco (host, porta, usuário, senha), pressione **`C`** no menu principal para acessar a tela de configuração.
+Ao iniciar, você verá a splash screen com informações do sistema e da conexão. Se precisar alterar as credenciais do banco (host, porta, usuário, senha), pressione **`C`** no menu principal para acessar a tela de configuração.
 
 **Credenciais padrão:**
 
@@ -165,7 +152,7 @@ Ao iniciar, você verá a splash screen estilo neofetch com informações do sis
 
 ---
 
-## 🧭 Navegação na CLI
+## Navegação na CLI
 
 ```
 Menu Principal
@@ -197,13 +184,13 @@ Dentro de cada módulo, as operações disponíveis são exibidas como:
 
 ---
 
-## 🧪 Exemplos de Uso (CRUD)
+## Exemplos de Uso (CRUD)
 
 Os exemplos abaixo usam a conta pessoal **Bruno Silva** (`IDConta = 2`) e a empresa **TechLink Solutions** (`IDConta = 1`), ambas presentes nos dados iniciais.
 
 ---
 
-### ✚ CREATE — Criar um Post
+### CREATE — Criar um Post
 
 No menu principal, selecione **`[2] Post`**, depois **`[1] ✚ Criar`**.
 
@@ -216,7 +203,7 @@ No menu principal, selecione **`[2] Post`**, depois **`[1] ✚ Criar`**.
 
 › Opção: 1
 
-› Conteúdo do Post: Acabei de concluir minha certificação em AWS! 🚀
+› Conteúdo do Post: Acabei de concluir minha certificação em AWS!
 › Visibilidade (PUBLICO/PRIVADO) [PUBLICO]: PUBLICO
 
   ✔  Operação realizada com sucesso!
@@ -225,12 +212,12 @@ No menu principal, selecione **`[2] Post`**, depois **`[1] ✚ Criar`**.
 **Equivalente SQL:**
 ```sql
 INSERT INTO POST (DtPubliPost, ConteudoPost, NivelVisib, IDConta)
-VALUES (CURRENT_TIMESTAMP, 'Acabei de concluir minha certificação em AWS! 🚀', 'PUBLICO', 2);
+VALUES (CURRENT_TIMESTAMP, 'Acabei de concluir minha certificação em AWS!', 'PUBLICO', 2);
 ```
 
 ---
 
-### 🔍 READ — Buscar Experiências Profissionais
+### READ — Buscar Experiências Profissionais
 
 No menu principal, selecione **`[10] Experiência Prof.`**, depois **`[2] 🔍 Buscar`**.
 
@@ -261,7 +248,7 @@ WHERE e.IDConta = 2;
 
 ---
 
-### ✎ UPDATE — Atualizar Status de uma Candidatura
+### UPDATE — Atualizar Status de uma Candidatura
 
 No menu principal, selecione **`[6] Aplicação a Vaga`**, depois **`[3] ✎ Atualizar`**.
 
@@ -292,7 +279,7 @@ WHERE IDVagaEmp = 1 AND IDConta = 2;
 
 ---
 
-### ✖ DELETE — Remover uma Conexão
+### DELETE — Remover uma Conexão
 
 No menu principal, selecione **`[15] Conexão`**, depois **`[4] ✖ Deletar`**.
 
@@ -315,7 +302,7 @@ WHERE IDConta_1 = 2 AND IDConta_2 = 3;
 
 ---
 
-## 📊 Demonstração de Índices
+## Demonstração de Índices
 
 O arquivo `indices.sql` demonstra o ganho de performance ao criar um índice na coluna `NomPsso` da tabela `PESSOAL`, que conta com **~90.000 registros** inseridos pela carga massiva.
 
@@ -356,13 +343,6 @@ Execution Time: 0.089 ms
 
 ---
 
-## 🔒 Observações de Segurança
+## Observações de Segurança
 
-- As senhas no `inserts.sql` são armazenadas em texto plano (`'123'`) para fins de desenvolvimento e testes. Em produção, utilize hashing (ex: `bcrypt`).
 - A FK `EXPERIENCIAPROF.IDEmp → CORPORATIVA.IDConta` foi declarada sem `ON DELETE CASCADE` intencionalmente: ao deletar uma empresa, o histórico de experiência profissional dos usuários é preservado (apenas o vínculo com a empresa é desfeito, setando `IDEmp = NULL`). A aplicação trata esse caso automaticamente.
-
----
-
-## 📄 Licença
-
-Distribuído sob a licença MIT. Veja o arquivo [`LICENSE`](LICENSE) para mais detalhes.
