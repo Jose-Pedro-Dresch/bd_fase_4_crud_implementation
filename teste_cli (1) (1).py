@@ -150,7 +150,7 @@ class PostCRUD:
         conteudo = prompt_input("Conteúdo")
         nivel = prompt_menu("Nível Visib.", PostCRUD.NIVEIS, extrair=False)
         if not nivel: return
-        executar_query("INSERT INTO POST (DtPubliPost, ConteudoPost, NivelVisib, IDConta) VALUES (CURRENT_DATE,%s,%s,%s);", 
+        executar_query("INSERT INTO POST (DtPubliPost, ConteudoPost, NivelVisib, IDConta) VALUES (CURRENT_TIMESTAMP,%s,%s,%s);", 
                        (conteudo, nivel, id_conta), commit=True)
 
     @staticmethod
@@ -201,7 +201,7 @@ class ComentarioCRUD:
         id_post = prompt_menu("Post", ComentarioCRUD._buscar_posts())
         if not id_conta or not id_post: return
         conteudo = prompt_input("Conteúdo")
-        executar_query("INSERT INTO COMENTARIO (ConteudoTxtCom, DtPubliCom, IDPost, IDConta) VALUES (%s, CURRENT_DATE, %s, %s);",
+        executar_query("INSERT INTO COMENTARIO (ConteudoTxtCom, DtPubliCom, IDPost, IDConta) VALUES (%s, CURRENT_TIMESTAMP, %s, %s);",
                        (conteudo, id_post, id_conta), commit=True)
 
     @staticmethod
@@ -218,6 +218,18 @@ class ComentarioCRUD:
         if prompt_input("Confirmar deleção? (S/N)").upper() == 'S':
             executar_query("DELETE FROM COMENTARIO WHERE IDComentario=%s;", (id_com,), commit=True)
 
+    @staticmethod
+    def tela_atualizar():
+        print("\n--- Atualizar Comentário ---")
+        id_com = prompt_input("ID do Comentário")
+        rows = executar_query("SELECT ConteudoTxtCom FROM COMENTARIO WHERE IDComentario=%s;", (id_com,), fetch=True)
+        if not rows:
+            print("Comentário não encontrado.")
+            return
+        print(f"\nConteúdo Atual: {rows[0][0]}")
+        novo_conteudo = prompt_input("Novo Conteúdo")
+        executar_query("UPDATE COMENTARIO SET ConteudoTxtCom=%s WHERE IDComentario=%s;", (novo_conteudo, id_com), commit=True)
+
 
 class ReagePostCRUD:
     TIPOS = ["Curtir", "Celebrar", "Apoiar", "Interessante", "Curioso"]
@@ -229,7 +241,7 @@ class ReagePostCRUD:
         id_post = prompt_menu("Post", ComentarioCRUD._buscar_posts())
         tipo = prompt_menu("Tipo Reação", ReagePostCRUD.TIPOS, extrair=False)
         if not all([id_conta, id_post, tipo]): return
-        executar_query("INSERT INTO REAGEPOST (IDConta, IDPost, DtReacao, TipoReacao) VALUES (%s,%s,CURRENT_DATE,%s) ON CONFLICT (IDConta,IDPost) DO UPDATE SET TipoReacao=%s, DtReacao=CURRENT_DATE;",
+        executar_query("INSERT INTO REAGEPOST (IDConta, IDPost, DtReacao, TipoReacao) VALUES (%s,%s,CURRENT_TIMESTAMP,%s) ON CONFLICT (IDConta,IDPost) DO UPDATE SET TipoReacao=%s, DtReacao=CURRENT_TIMESTAMP;",
                        (id_conta, id_post, tipo, tipo), commit=True)
 
     @staticmethod
@@ -246,7 +258,7 @@ class ReagePostCRUD:
         id_post = prompt_input("ID Post")
         novo_tipo = prompt_menu("Novo Tipo", ReagePostCRUD.TIPOS, extrair=False)
         if novo_tipo:
-            executar_query("UPDATE REAGEPOST SET TipoReacao=%s, DtReacao=CURRENT_DATE WHERE IDConta=%s AND IDPost=%s;", (novo_tipo, id_conta, id_post), commit=True)
+            executar_query("UPDATE REAGEPOST SET TipoReacao=%s, DtReacao=CURRENT_TIMESTAMP WHERE IDConta=%s AND IDPost=%s;", (novo_tipo, id_conta, id_post), commit=True)
 
     @staticmethod
     def tela_deletar():
@@ -313,15 +325,17 @@ class AplicaVagaCRUD:
     def _buscar_vagas():
         return buscar_opcoes_dinamicas("VAGAEMPREGO", "IDVagaEmp", "TtloVaga")
 
+    STATUS = ["Enviada", "Em Analise", "Aprovada", "Recusada"]
+
     @staticmethod
     def tela_criar():
         print("\n--- Aplicar a Vaga ---")
         id_conta = prompt_menu("Candidato (Conta)", PostCRUD._buscar_contas())
         id_vaga = prompt_menu("Vaga", AplicaVagaCRUD._buscar_vagas())
         if not id_conta or not id_vaga: return
-        site = prompt_input("Site/URL (opcional)", obrigatorio=False)
-        executar_query("INSERT INTO APLICAAVAGA (IDVagaEmp, DtAplccao, SttusAplccao, IDConta) VALUES (%s, CURRENT_DATE, %s, %s);",
-                       (id_vaga, site, id_conta), commit=True)
+        status = prompt_menu("Status da Aplicação", AplicaVagaCRUD.STATUS, extrair=False) or "Enviada"
+        executar_query("INSERT INTO APLICAAVAGA (IDVagaEmp, DtAplccao, SttusAplccao, IDConta) VALUES (%s, CURRENT_TIMESTAMP, %s, %s);",
+                       (id_vaga, status, id_conta), commit=True)
 
     @staticmethod
     def tela_buscar():
@@ -331,7 +345,7 @@ class AplicaVagaCRUD:
             rows = executar_query("SELECT IDVagaEmp, IDConta, DtAplccao, SttusAplccao FROM APLICAAVAGA WHERE IDVagaEmp=%s ORDER BY DtAplccao;", (id_vaga,), fetch=True)
         else:
             rows = executar_query("SELECT IDVagaEmp, IDConta, DtAplccao, SttusAplccao FROM APLICAAVAGA ORDER BY DtAplccao DESC LIMIT 30;", fetch=True)
-        exibir_resultados(rows, lambda r: f"Vaga:{r[0]}  Conta:{r[1]}  Data:{r[2]}  Site:{r[3] or '-'}")
+        exibir_resultados(rows, lambda r: f"Vaga:{r[0]}  Conta:{r[1]}  Data:{r[2]}  Status:{r[3] or '-'}")
 
     @staticmethod
     def tela_atualizar():
@@ -342,8 +356,9 @@ class AplicaVagaCRUD:
         if not rows:
             print("Aplicação não encontrada.")
             return
-        novo_site = prompt_input("Novo Site/URL", default=rows[0][0] or "", obrigatorio=False)
-        executar_query("UPDATE APLICAAVAGA SET SttusAplccao=%s WHERE IDVagaEmp=%s AND IDConta=%s;", (novo_site, id_vaga, id_conta), commit=True)
+        novo_status = prompt_menu(f"Novo Status (Atual: {rows[0][0]})", AplicaVagaCRUD.STATUS, extrair=False)
+        if novo_status:
+            executar_query("UPDATE APLICAAVAGA SET SttusAplccao=%s WHERE IDVagaEmp=%s AND IDConta=%s;", (novo_status, id_vaga, id_conta), commit=True)
 
     @staticmethod
     def tela_deletar():
@@ -686,7 +701,7 @@ class ConexaoCRUD:
         if not id_de or not id_para or id_de == id_para:
             print("Erro: Selecione duas contas distintas.")
             return
-        executar_query("INSERT INTO CONEXAO (DtEnvConv, StatusConexao, IDConta_1, IDConta_2) VALUES (CURRENT_DATE, 'Pendente', %s, %s);", (id_de, id_para), commit=True)
+        executar_query("INSERT INTO CONEXAO (DtEnvConv, StatusConexao, IDConta_1, IDConta_2) VALUES (CURRENT_TIMESTAMP, 'Pendente', %s, %s);", (id_de, id_para), commit=True)
 
     @staticmethod
     def tela_buscar():
@@ -702,7 +717,7 @@ class ConexaoCRUD:
         id_para = prompt_input("ID Conta Destinatário")
         status = prompt_menu("Novo Status", ConexaoCRUD.STATUS, extrair=False)
         if not status: return
-        query = f"UPDATE CONEXAO SET StatusConexao=%s, DtAceitConv={'CURRENT_DATE' if status=='Aceita' else 'NULL'} WHERE IDConta_1=%s AND IDConta_2=%s;"
+        query = f"UPDATE CONEXAO SET StatusConexao=%s, DtAceitConv={'CURRENT_TIMESTAMP' if status=='Aceita' else 'NULL'} WHERE IDConta_1=%s AND IDConta_2=%s;"
         executar_query(query, (status, id_de, id_para), commit=True)
 
     @staticmethod
@@ -820,20 +835,62 @@ class ContaCRUD:
     def tela_atualizar(self):
         print("\n--- Atualizar Conta ---")
         id_conta = prompt_input("ID da Conta")
-        
+
         rows = executar_query("SELECT EmailConta FROM CONTA WHERE IDConta=%s;", (id_conta,), fetch=True)
         if not rows:
             print("Conta não encontrada.")
             return
-            
+
         novo_email = prompt_input("Novo Email", default=rows[0][0])
-        executar_query("UPDATE CONTA SET EmailConta=%s WHERE IDConta=%s;", (novo_email, id_conta), commit=True)
+
+        rows_p = executar_query("SELECT NomPsso, SobnomPsso, TtloProfPsso FROM PESSOAL WHERE IDConta=%s;", (id_conta,), fetch=True)
+        rows_c = executar_query("SELECT NomComerc, NumFuncEmp, DescriEmp FROM CORPORATIVA WHERE IDConta=%s;", (id_conta,), fetch=True)
+
+        conn = conectar_bd()
+        if not conn: return
+        try:
+            with conn.cursor() as cur:
+                cur.execute("UPDATE CONTA SET EmailConta=%s WHERE IDConta=%s;", (novo_email, id_conta))
+                if rows_p:
+                    r = rows_p[0]
+                    novo_nom = prompt_input("Nome", default=r[0])
+                    novo_sob = prompt_input("Sobrenome", default=r[1])
+                    novo_ttl = prompt_input("Título Profissional", default=r[2] or "", obrigatorio=False)
+                    cur.execute("UPDATE PESSOAL SET NomPsso=%s, SobnomPsso=%s, TtloProfPsso=%s WHERE IDConta=%s;",
+                                (novo_nom, novo_sob, novo_ttl if novo_ttl else None, id_conta))
+                elif rows_c:
+                    r = rows_c[0]
+                    novo_nome_emp = prompt_input("Nome Empresa", default=r[0])
+                    novo_num_func = prompt_input("Nº Funcionários", default=str(r[1]) if r[1] else "", obrigatorio=False)
+                    novo_desc = prompt_input("Descrição", default=r[2] or "", obrigatorio=False)
+                    cur.execute("UPDATE CORPORATIVA SET NomComerc=%s, NumFuncEmp=%s, DescriEmp=%s WHERE IDConta=%s;",
+                                (novo_nome_emp, novo_num_func if novo_num_func else None, novo_desc if novo_desc else None, id_conta))
+            conn.commit()
+            print("\n✔ Conta atualizada com sucesso!")
+        except Error as e:
+            conn.rollback(); print(f"Erro: {e}")
+        finally:
+            conn.close()
 
     def tela_deletar(self):
         print("\n--- Deletar Conta ---")
         id_conta = prompt_input("ID da Conta")
-        if prompt_input("Aviso Crítico: Deletar permanentemente? (S/N)").upper() == 'S':
-            executar_query("DELETE FROM CONTA WHERE IDConta=%s;", (id_conta,), commit=True)
+        if prompt_input("Aviso Critico: Deletar permanentemente? (S/N)").upper() == 'S':
+            conn = conectar_bd()
+            if not conn: return
+            try:
+                with conn.cursor() as cur:
+                    # EXPERIENCIAPROF tem FK sem CASCADE para CORPORATIVA (IDEmp).
+                    # Nullifica o vinculo antes de deletar para evitar violacao de FK.
+                    cur.execute("UPDATE EXPERIENCIAPROF SET IDEmp=NULL WHERE IDEmp=%s;", (id_conta,))
+                    cur.execute("DELETE FROM CONTA WHERE IDConta=%s;", (id_conta,))
+                conn.commit()
+                print("\n✔ Operacao realizada com sucesso!")
+            except Error as e:
+                conn.rollback()
+                print(f"\n✘ Erro na operacao: {e}")
+            finally:
+                conn.close()
 
 
 # ════════════════════════════════════════════════════════════════
