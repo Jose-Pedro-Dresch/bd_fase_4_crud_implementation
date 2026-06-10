@@ -119,7 +119,7 @@ Há duas formas de rodar o projeto: via **Docker** (recomendado, funciona em qua
 
 ---
 
-### 🐳 Opção 1 — Docker (recomendado)
+### Opção 1 — Docker (recomendado)
 
 Esta é a forma mais simples e funciona em qualquer ambiente, incluindo **GitHub Codespaces**, sem instalar PostgreSQL ou configurar nada manualmente.
 
@@ -154,7 +154,7 @@ O script automaticamente:
 3. Aguarda o banco ficar saudável
 4. Abre a CLI com terminal interativo (`docker run -it`)
 
-> ⚠️ Na **primeira execução**, a carga massiva de ~100.000 registros pode levar alguns minutos. As execuções seguintes são instantâneas pois os dados ficam persistidos no volume `postgres_data`.
+> Na **primeira execução**, a carga massiva de ~100.000 registros pode levar alguns minutos. As execuções seguintes são instantâneas pois os dados ficam persistidos no volume `postgres_data`.
 
 #### Parar o banco quando não estiver usando
 
@@ -171,7 +171,7 @@ docker compose down -v
 
 ---
 
-### 🖥️ Opção 2 — Instalação local
+### Opção 2 — Instalação local
 
 Use esta opção se preferir rodar sem Docker, com PostgreSQL instalado diretamente na máquina.
 
