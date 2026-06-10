@@ -50,8 +50,9 @@ linkedin-db/
 │   ├── inserts.sql        # DML: dados iniciais + carga massiva (100k+ registros)
 │   └── indices.sql        # Demonstração de análise de índices com EXPLAIN ANALYZE
 ├── Dockerfile             # Imagem da aplicação Python
-├── docker-compose.yml     # Orquestração: app + PostgreSQL
-├── entrypoint.sh          # Script de inicialização do container
+├── docker-compose.yml     # Sobe o PostgreSQL com banco já criado e populado
+├── entrypoint.sh          # Aguarda o banco e injeta configurações de conexão
+├── run.sh                 # Script principal — use este para rodar o projeto
 ├── relational_schema.png  # Diagrama do esquema relacional
 ├── README.md
 └── LICENSE
@@ -118,9 +119,9 @@ Há duas formas de rodar o projeto: via **Docker** (recomendado, funciona em qua
 
 ---
 
-### Opção 1 — Docker (recomendado)
+### 🐳 Opção 1 — Docker (recomendado)
 
-Esta é a forma mais simples. Com um único comando, o Docker sobe o PostgreSQL, cria o banco, aplica o schema, carrega todos os dados e abre a CLI automaticamente. Não é necessário instalar o PostgreSQL nem configurar nada manualmente.
+Esta é a forma mais simples e funciona em qualquer ambiente, incluindo **GitHub Codespaces**, sem instalar PostgreSQL ou configurar nada manualmente.
 
 #### Pré-requisitos
 
@@ -129,40 +130,48 @@ Esta é a forma mais simples. Com um único comando, o Docker sobe o PostgreSQL,
 
 > No **GitHub Codespaces**, o Docker já está disponível por padrão — nenhuma instalação adicional é necessária.
 
-#### Suba o ambiente completo
+#### Estrutura dos arquivos Docker
+
+| Arquivo | Função |
+|---------|--------|
+| `Dockerfile` | Imagem Python com psycopg2 e dependências |
+| `docker-compose.yml` | Sobe o PostgreSQL com o banco já criado e populado |
+| `entrypoint.sh` | Aguarda o banco e injeta as configurações de conexão |
+| `run.sh` | Script principal — use este para rodar o projeto |
+
+#### Como rodar
+
+Dê permissão de execução ao script e rode:
 
 ```bash
-docker compose up --build
+chmod +x run.sh
+./run.sh
 ```
 
-Isso irá:
-1. Construir a imagem Python com todas as dependências
-2. Subir o container PostgreSQL com o banco `linkedin` já criado
-3. Aplicar o `schema.sql` e o `inserts.sql` automaticamente
-4. Aguardar o banco estar pronto e abrir a CLI
+O script automaticamente:
+1. Constrói a imagem Python da aplicação
+2. Sobe o container do PostgreSQL em background
+3. Aguarda o banco ficar saudável
+4. Abre a CLI com terminal interativo (`docker run -it`)
 
-> Na **primeira execução**, a carga massiva de ~100.000 registros pode levar alguns minutos. As execuções seguintes são instantâneas pois os dados ficam persistidos no volume `postgres_data`.
+> ⚠️ Na **primeira execução**, a carga massiva de ~100.000 registros pode levar alguns minutos. As execuções seguintes são instantâneas pois os dados ficam persistidos no volume `postgres_data`.
 
-#### Nas próximas execuções
-
-Como os dados já estão no volume, basta rodar:
+#### Parar o banco quando não estiver usando
 
 ```bash
-docker compose up
+docker compose down
 ```
 
 #### Resetar o banco do zero
 
-Se quiser apagar tudo e recarregar os dados:
-
 ```bash
 docker compose down -v
-docker compose up --build
+./run.sh
 ```
 
 ---
 
-### Opção 2 — Instalação local
+### 🖥️ Opção 2 — Instalação local
 
 Use esta opção se preferir rodar sem Docker, com PostgreSQL instalado diretamente na máquina.
 

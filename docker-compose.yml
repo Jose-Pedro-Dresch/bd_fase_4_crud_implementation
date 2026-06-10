@@ -20,20 +20,5 @@ services:
       timeout: 5s
       retries: 10
 
-  app:
-    build: .
-    container_name: linkedin_app
-    depends_on:
-      db:
-        condition: service_healthy
-    environment:
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_NAME: linkedin
-      DB_USER: postgres
-      DB_PASSWORD: "123"
-    stdin_open: true
-    tty: true
-
 volumes:
   postgres_data:
