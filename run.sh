@@ -3,7 +3,6 @@ set -e
 
 IMAGE_NAME="linkedin_app"
 DB_CONTAINER="linkedin_db"
-NETWORK=$(docker inspect --format='{{range $k, $v := .NetworkSettings.Networks}}{{$k}}{{end}}' $DB_CONTAINER)
 
 echo ""
 echo "  [1/3] Construindo a imagem da aplicação..."
@@ -13,9 +12,19 @@ echo "  [2/3] Subindo o banco de dados..."
 docker compose up -d db
 
 echo "  [3/3] Aguardando o banco ficar saudável..."
+
+# Espera o container existir antes de inspecionar
+until docker inspect $DB_CONTAINER > /dev/null 2>&1; do
+  sleep 1
+done
+
+# Espera o healthcheck passar
 until docker inspect --format='{{.State.Health.Status}}' $DB_CONTAINER 2>/dev/null | grep -q "healthy"; do
   sleep 2
 done
+
+# Detecta o nome da network automaticamente (varia conforme o nome da pasta)
+NETWORK=$(docker inspect --format='{{range $k, $v := .NetworkSettings.Networks}}{{$k}}{{end}}' $DB_CONTAINER)
 
 echo ""
 echo "  Tudo pronto! Iniciando a aplicação..."
