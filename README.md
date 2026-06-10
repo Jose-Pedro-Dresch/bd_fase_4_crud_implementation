@@ -385,7 +385,8 @@ O arquivo `indices.sql` demonstra o ganho de performance ao criar um índice na 
 
 **Via Docker:**
 ```bash
-docker compose exec db psql -U postgres -d linkedin -f /dev/stdin < ./sql/indices.sql
+docker cp ./sql/indices.sql linkedin_db:/indices.sql
+docker compose exec db psql -U postgres -d linkedin -f /indices.sql
 ```
 
 **Localmente:**
