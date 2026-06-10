@@ -3,7 +3,7 @@ set -e
 
 IMAGE_NAME="linkedin_app"
 DB_CONTAINER="linkedin_db"
-NETWORK="linkedin-db_default"
+NETWORK=$(docker inspect --format='{{range $k, $v := .NetworkSettings.Networks}}{{$k}}{{end}}' $DB_CONTAINER)
 
 echo ""
 echo "  [1/3] Construindo a imagem da aplicação..."
