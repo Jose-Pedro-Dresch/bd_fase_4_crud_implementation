@@ -1,0 +1,39 @@
+services:
+
+  db:
+    image: postgres:16-alpine
+    container_name: linkedin_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: linkedin
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "123"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./sql/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
+      - ./sql/inserts.sql:/docker-entrypoint-initdb.d/02_inserts.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d linkedin"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    container_name: linkedin_app
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: linkedin
+      DB_USER: postgres
+      DB_PASSWORD: "123"
+    stdin_open: true
+    tty: true
+
+volumes:
+  postgres_data:

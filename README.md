@@ -48,7 +48,10 @@ linkedin-db/
 ├── sql/
 │   ├── schema.sql         # DDL: criação das tabelas e constraints
 │   ├── inserts.sql        # DML: dados iniciais + carga massiva (100k+ registros)
-│   └── indices.sql        # Demonstração de análise de índices com EXPLAIN ANALYZE  
+│   └── indices.sql        # Demonstração de análise de índices com EXPLAIN ANALYZE
+├── Dockerfile             # Imagem da aplicação Python
+├── docker-compose.yml     # Orquestração: app + PostgreSQL
+├── entrypoint.sh          # Script de inicialização do container
 ├── relational_schema.png  # Diagrama do esquema relacional
 ├── README.md
 └── LICENSE
@@ -104,36 +107,98 @@ pip install psycopg2-binary
 
 ## Como Rodar
 
-### 1. Clone o repositório
+### 0. Clone o repositório
 
 ```bash
-git clone https://github.com/seu-usuario/linkedin-db.git
-cd linkedin-db
+git clone https://github.com/Jose-Pedro-Dresch/bd_fase_4_crud_implementation.git
+cd bd_fase_4_crud_implementation
 ```
 
-### 2. Configure o banco de dados
+Há duas formas de rodar o projeto: via **Docker** (recomendado, funciona em qualquer ambiente incluindo Codespaces) ou **localmente** com PostgreSQL instalado na máquina.
+
+---
+
+### Opção 1 — Docker (recomendado)
+
+Esta é a forma mais simples. Com um único comando, o Docker sobe o PostgreSQL, cria o banco, aplica o schema, carrega todos os dados e abre a CLI automaticamente. Não é necessário instalar o PostgreSQL nem configurar nada manualmente.
+
+#### Pré-requisitos
+
+- [Docker](https://docs.docker.com/get-docker/) instalado
+- [Docker Compose](https://docs.docker.com/compose/install/) instalado (já incluso no Docker Desktop)
+
+> No **GitHub Codespaces**, o Docker já está disponível por padrão — nenhuma instalação adicional é necessária.
+
+#### Suba o ambiente completo
+
+```bash
+docker compose up --build
+```
+
+Isso irá:
+1. Construir a imagem Python com todas as dependências
+2. Subir o container PostgreSQL com o banco `linkedin` já criado
+3. Aplicar o `schema.sql` e o `inserts.sql` automaticamente
+4. Aguardar o banco estar pronto e abrir a CLI
+
+> Na **primeira execução**, a carga massiva de ~100.000 registros pode levar alguns minutos. As execuções seguintes são instantâneas pois os dados ficam persistidos no volume `postgres_data`.
+
+#### Nas próximas execuções
+
+Como os dados já estão no volume, basta rodar:
+
+```bash
+docker compose up
+```
+
+#### Resetar o banco do zero
+
+Se quiser apagar tudo e recarregar os dados:
+
+```bash
+docker compose down -v
+docker compose up --build
+```
+
+---
+
+### Opção 2 — Instalação local
+
+Use esta opção se preferir rodar sem Docker, com PostgreSQL instalado diretamente na máquina.
+
+#### Pré-requisitos
+
+- Python **3.8 ou superior**
+- PostgreSQL **13 ou superior**
+- Dependência Python:
+
+```bash
+pip install psycopg2-binary
+```
+
+#### Configure o banco de dados
 
 Crie o banco no PostgreSQL:
 
 ```bash
-psql -U postgres -c "CREATE DATABASE linkedin;"
+sudo -u postgres psql -c "CREATE DATABASE linkedin;"
 ```
 
 Aplique o schema:
 
 ```bash
-psql -U postgres -d linkedin -f ./sql/schema.sql
+sudo -u postgres psql -d linkedin -f ./sql/schema.sql
 ```
 
 Carregue os dados iniciais e a carga massiva:
 
 ```bash
-psql -U postgres -d linkedin -f ./sql/inserts.sql
+sudo -u postgres psql -d linkedin -f ./sql/inserts.sql
 ```
 
 > A carga massiva insere **~100.000 contas**, **~10.000 empresas** e dados relacionados. O processo pode levar alguns minutos dependendo do hardware.
 
-### 3. Execute a aplicação
+#### Execute a aplicação
 
 ```bash
 python3 app.py
@@ -309,8 +374,14 @@ O arquivo `indices.sql` demonstra o ganho de performance ao criar um índice na 
 
 ### Execute o arquivo:
 
+**Via Docker:**
 ```bash
-psql -U postgres -d linkedin -f ./sql/indices.sql
+docker compose exec db psql -U postgres -d linkedin -f /dev/stdin < ./sql/indices.sql
+```
+
+**Localmente:**
+```bash
+sudo -u postgres psql -d linkedin -f ./sql/indices.sql
 ```
 
 ### Resultado esperado
